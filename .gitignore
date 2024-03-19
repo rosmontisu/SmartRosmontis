@@ -131,3 +131,4 @@ dist
 
 # my private data
 /private
+.env

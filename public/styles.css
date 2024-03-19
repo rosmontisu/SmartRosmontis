@@ -1,0 +1,68 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.background {
+    position: relative;
+    height: 100%;
+    background: url('rosmontisImage.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+.character-image {
+    /* 캐릭터 이미지는 이제 배경 이미지로 사용되므로 .character-image 클래스는 삭제하거나 비워둘 수 있습니다. */
+}
+
+.dialogue-box {
+    position: absolute;
+    bottom: 10%; /* 대화 상자의 위치를 조정하세요. */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5); /* 반투명 배경을 추가하여 텍스트 가독성 향상 */
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 80%; /* 뷰포트에 따라 대화 상자의 최대 너비를 제한 */
+    color: white;
+}
+
+.character-name, .character-dialogue {
+    margin: 0;
+}
+
+/* 추가된 채팅 인터페이스 스타일링 */
+.chat-interface {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+#send-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background-color: #4cae4c;
+}
