@@ -9,8 +9,7 @@ const app = express();
 app.use(express.json());
 
 const API_KEY = process.env.OPENAI_API_KEY;
-// Assistants API 엔드포인트로 변경
-const ASSISTANTS_API_ENDPOINT = 'https://api.openai.com/v1/assistants/your_assistant_id/messages';
+const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
 // 정적 파일을 위한 경로 설정
 app.use(express.static(path.join(__dirname, 'public')));
@@ -40,6 +39,7 @@ app.post('/chat', async (req, res) => {
 
     const botMessage = response.data.choices[0].message.content;
     res.json({ reply: botMessage });
+    console.log(botMessage);
 
   } catch (error) {
     console.error('Error:', error);

@@ -27,7 +27,7 @@ app.post('/chat', async (req, res) => {
     const response = await axios.post(GPT_API_ENDPOINT, {
       model: 'gpt-3.5-turbo',
       messages: [
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are a helpful assistant. your name is 로즈마리"},
         {"role": "user", "content": message}
       ]
     }, {
@@ -39,6 +39,7 @@ app.post('/chat', async (req, res) => {
 
     const botMessage = response.data.choices[0].message.content;
     res.json({ reply: botMessage });
+    console.log(botMessage);
 
   } catch (error) {
     console.error('Error:', error);
