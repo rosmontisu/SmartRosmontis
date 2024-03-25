@@ -1,5 +1,6 @@
 import json
 
+# 파인튜닝 이전에 json 파일 jsonl로 바꿔주세요!
 def convert_json_to_jsonl(input_file_path, output_file_path):
     """
     Convert a JSON file to a JSON Lines file.

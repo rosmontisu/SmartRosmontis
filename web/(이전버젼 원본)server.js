@@ -1,12 +1,13 @@
-require('dotenv').config();
 const express = require('express');
+const fs = require('fs'); // 파일 시스템 접근 모듈
 const path = require('path');
 const axios = require('axios');
 const { Client, GatewayIntentBits } = require('discord.js');
+require('dotenv').config();
+
 
 
 const app = express();
-
 // JSON 요청 본문을 파싱하기 위한 미들웨어 설정
 app.use(express.json());
 
@@ -14,12 +15,22 @@ const API_KEY = process.env.OPENAI_API_KEY;
 const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
-const AI_PROMPT = process.env.AI_PROMPT;
 
-// console.log(process.env.OPENAI_API_KEY); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
-// console.log(process.env.DISCORD_TOKEN); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
-// console.log(GPT_API_ENDPOINT); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
-// console.log(AI_PROMPT)
+// 짧은 프롬프트는 .env로 가져옵니다.
+//const AI_PROMPT = process.env.AI_PROMPT; 
+
+// 긴 프롬프트는 prompt.txt로 가져옵니다
+const directoryPath = __dirname;
+const filePath = path.join(directoryPath, 'prompt.txt');
+const fileContent = fs.readFileSync(filePath, 'utf8');
+console.log(fileContent);
+const AI_PROMPT = fileContent
+
+
+console.log(process.env.OPENAI_API_KEY); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
+console.log(process.env.DISCORD_TOKEN); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
+console.log(GPT_API_ENDPOINT); // 디버깅 목적으로만 사용하고 실제 코드에는 포함시키지 마세요.
+console.log(AI_PROMPT)
 
 
 // 정적 파일을 위한 경로 설정
@@ -71,7 +82,10 @@ client.on('messageCreate', async message => {
 
   try {
     const response = await axios.post(GPT_API_ENDPOINT, {
-      model: 'gpt-3.5-turbo',
+      // 파인튜닝 모델 1 : ft:gpt-3.5-turbo-0125:hepari::95V281ME
+      // 환각이 심함, 기초적인 대화능력이 붕괴하였음
+      // model: 'ft:gpt-3.5-turbo-0125:hepari::95V281ME', 
+      model: 'gpt-4-turbo-preview', 
       messages: [
         {"role": "system", "content": AI_PROMPT},
         {"role": "user", "content": message.content}
@@ -85,6 +99,9 @@ client.on('messageCreate', async message => {
 
     const botReply = response.data.choices[0].message.content;
     await message.reply(botReply);
+    console.log(message.content)
+    console.log(botReply)
+    console.log("---------------------------------------------------------------")
 
   } catch (error) {
     console.error('Error responding to message: ', error);

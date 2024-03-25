@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs'); // 파일 시스템 접근 모듈
 const path = require('path');
 const axios = require('axios');
-const { Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 require('dotenv').config();
 
@@ -94,22 +94,7 @@ client.on('messageCreate', async message => {
 
         message.reply('I have joined the voice channel!');
     }
-    if (message.content === '/testImage') {
-      // 이미지 URL 예시
-      const imageUrl = 'rosmontisImage.jpg';
-
-      // 로컬 파일이면 경로를 지정하세요.
-      const filePath = './rosmontisImage.jpg';
-      //const file = new AttachmentBuilder(filePath).setName('LocalImage.png');
-      const file = new AttachmentBuilder('').setName('rosmontisImage.jpg');
-
-      // 이미지를 메시지로 전송
-      const imageAttachment = new AttachmentBuilder(imageUrl, { name: 'rosmontisImage.jpg' });
-      await message.channel.send({ content: 'Here is your image:', files: [imageAttachment] });
-  
-    }
     else {
-      // 기초 대화 기능
       try {
         const response = await axios.post(GPT_API_ENDPOINT, {
           // 파인튜닝 모델 1 : ft:gpt-3.5-turbo-0125:hepari::95V281ME
