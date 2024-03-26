@@ -29,6 +29,8 @@ const filePath = path.join(directoryPath, 'prompt3.txt'); // gpt 3.5 prompt
 const fileContent = fs.readFileSync(filePath, 'utf8');
 const AI_PROMPT = fileContent
 
+let getTskReq;
+
 // tts 함수 구현
 async function textToSpeech(text) {
   try {
@@ -114,9 +116,15 @@ client.on('messageCreate', async message => {
         .setImage(rosmontisImageUrl)
         .setTimestamp()
         .setFooter({ text: 'setFooter text ', iconURL: rosmontisImageUrl});
-        
+     
     await message.channel.send({ embeds: [embed] });
     }
+
+    // MAA 연동 테스트
+    if (message.content === 'testMaa') {    
+      
+      message.reply(getTskReq);
+  }
 
 
     else {
@@ -170,9 +178,13 @@ function addTask(newTask) {
     tasks.push(newTask);
 }
 
+
+
 // getTask 엔드포인트 구현
 app.post('/maa/getTask', (req, res) => {
   console.log('getTask 요청:', req.body);
+  getTskReq = JSON.stringify(req.body); // json 2 string 
+  console.log(getTskReq);
   res.json({ tasks });
 });
 
