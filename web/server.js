@@ -89,7 +89,7 @@ client.on('messageCreate', async message => {
     }
     // 이미지 새성 기능
     else if (message.content === 'testImage') {
-      const imageUrl = 'rosmontisImage.jpg'; // 이미지 URL 예시
+      const imageUrl = rosmontisImageUrl; // 이미지 URL 예시
       const filePath = './rosmontisImage.jpg'; // 로컬 파일이면 경로를 지정
       //const file = new AttachmentBuilder(filePath).setName('LocalImage.png');
       const file = new AttachmentBuilder('').setName('rosmontisImage.jpg');
@@ -121,7 +121,7 @@ client.on('messageCreate', async message => {
     }
 
     // MAA 연동 테스트
-    if (message.content === 'testMaa') {    
+    else if (message.content === 'testMaa') {    
       
       message.reply(getTskReq);
   }
