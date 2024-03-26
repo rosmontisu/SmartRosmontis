@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs'); // 파일 시스템 접근 모듈
 const path = require('path');
 const axios = require('axios');
@@ -6,24 +7,23 @@ const { Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 require('dotenv').config();
 
-const app = express();
-// JSON 요청 본문을 파싱하기 위한 미들웨어 설정
-app.use(express.json());
-
 const API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const app = express();
+const maaPort = 3001;
 
-// 짧은 프롬프트는 .env로 가져옵니다.
-//const AI_PROMPT = process.env.AI_PROMPT; 
+// JSON 요청 본문을 파싱하기 위한 미들웨어 설정
+app.use(express.json());
+app.use(bodyParser.json());
 
-// 긴 프롬프트는 prompt.txt로 가져옵니다
-const directoryPath = __dirname;
-const filePath = path.join(directoryPath, 'prompt3.txt');
-//const filePath = path.join(directoryPath, 'prompt4.txt');
+
+//const AI_PROMPT = process.env.AI_PROMPT; // 짧은 프롬프트는 .env로 가져옵니다.
+const directoryPath = __dirname; // 긴 프롬프트는 prompt.txt로 가져옵니다
+const filePath = path.join(directoryPath, 'prompt3.txt'); // gpt 3.5 prompt
+//const filePath = path.join(directoryPath, 'prompt4.txt'); // gpt 4 prompt
 const fileContent = fs.readFileSync(filePath, 'utf8');
-console.log(fileContent);
 const AI_PROMPT = fileContent
 
 // tts 함수 구현
@@ -43,7 +43,6 @@ async function textToSpeech(text) {
         }
       }
     );
-
     // API 응답에서 음성 데이터 추출
     // 주의: 실제 응답 구조는 OpenAI TTS API 문서를 참조해야 합니다.
     const audioData = response.data; // 응답 구조에 따라 수정 필요
@@ -56,33 +55,24 @@ async function textToSpeech(text) {
   }
 }
 
-
-// 봇 클라이언트 생성
+// 실제 봇 클라이언트 생성
 const client = new Client({ intents: [
   GatewayIntentBits.Guilds, 
   GatewayIntentBits.GuildMessages, 
   GatewayIntentBits.MessageContent] });
-
-
 client.once('ready', () => {
     console.log('Bot is ready!');
-
     // 텍스트 변환을 테스트합니다
-    const text = "Hello, this is a test for converting text to speech.";
+    const text = "txt 음성변환 테스트 문자열입니다";
     //textToSpeech(text); 임시 주석 처리
 });
-
 client.on('messageCreate', async message => {
     // 봇이나 DM으로부터의 메시지는 무시
     if (!message.guild || message.author.bot) return;
-
-
     //음성 입장 기능
-    if (message.content === '/join') {
-        // 메시지 작성자가 음성 채널에 없는 경우
-        if (!message.member.voice.channel) {
-            message.reply('You need to be in a voice channel first!');
-            return;
+    if (message.content === '/join') {    
+        if (!message.member.voice.channel) {// 유저가 음성 채널에 없는 경우
+            message.reply('음성 채널에 먼저 들어가주세요!'); return;           
         }
 
         // 음성 채널에 접속
@@ -92,37 +82,25 @@ client.on('messageCreate', async message => {
             adapterCreator: message.guild.voiceAdapterCreator
         });
 
-        message.reply('I have joined the voice channel!');
+        message.reply('음성 채널에 접속했습니다!');
     }
     if (message.content === '/testImage') {
       // 이미지 URL 예시
       const imageUrl = 'rosmontisImage.jpg';
-
       // 로컬 파일이면 경로를 지정하세요.
       const filePath = './rosmontisImage.jpg';
       //const file = new AttachmentBuilder(filePath).setName('LocalImage.png');
       const file = new AttachmentBuilder('').setName('rosmontisImage.jpg');
 
-      // 이미지를 메시지로 전송
+      // ~ 이미지 메시지 전송 ~
       const imageAttachment = new AttachmentBuilder(imageUrl, { name: 'rosmontisImage.jpg' });
-      await message.channel.send({ content: 'Here is your image:', files: [imageAttachment] });
+      await message.channel.send({ content: '로즈마리에요:', files: [imageAttachment] });
   
     }
     else {
       // 기초 대화 기능
       try {
         const response = await axios.post(GPT_API_ENDPOINT, {
-          // 파인튜닝 모델 1 : ft:gpt-3.5-turbo-0125:hepari::95V281ME
-          // 환각이 심함, 기초적인 대화능력이 붕괴하였음
-          // model: 'ft:gpt-3.5-turbo-0125:hepari::95V281ME', 
-
-          // gpt 4 : model: 'gpt-4-turbo-preview', 
-          // token cost가 빠르게 나감
-
-          // gpt 3.5 : model: 'gpt-3.5-turbo-0125', 
-          // 가격은 싼데 말을 잘 못핢
-
-
           model: 'gpt-3.5-turbo-0125', 
           messages: [
             {"role": "system", "content": AI_PROMPT},
@@ -155,6 +133,56 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server and Discord bot are running on http://localhost:${PORT}`);
 });
-
-
 console.log("현재 모델은 3.5")
+
+
+
+
+// maa_server 연동 파트
+// bodyParser를 사용하여 JSON 요청 본문 파싱 활성화
+app.use(bodyParser.json());
+
+let tasks = []; // 작업을 저장할 배열
+// 새 작업 추가 함수
+function addTask(newTask) {
+    tasks.push(newTask);
+}
+
+// getTask 엔드포인트 구현
+app.post('/maa/getTask', (req, res) => {
+  console.log('getTask 요청:', req.body);
+  res.json({ tasks });
+});
+
+// 작업 상태 보고 엔드포인트
+app.post('/maa/reportStatus', (req, res) => {
+  console.log('reportStatus 요청:', req.body);
+  // 여기에서 작업 실행 결과를 처리합니다. 예를 들어 데이터베이스에 저장할 수 있습니다.
+  res.send('OK');
+});
+app.listen(maaPort, () => {
+  console.log(`서버가 ${maaPort}번 포트에서 실행중입니다.`);
+});
+console.log("작동 테스트 1")
+// 임시로 몇 가지 작업을 추가
+addTask({
+  id: "task1",
+  type: "CaptureImage"
+});
+console.log("작동 테스트 2")
+addTask({
+  id: "task2",
+  type: "LinkStart"
+});
+
+
+
+
+// 파인튜닝 모델 1 : ft:gpt-3.5-turbo-0125:hepari::95V281ME
+// gpt 4 : model: 'gpt-4-turbo-preview', 
+// gpt 3.5 : model: 'gpt-3.5-turbo-0125', 
+
+// 엔드포인트의 구조는
+// http://mydomain.com:port/maa/getTask
+// http://localhost:3000/maa/getTask
+// http://localhost:3000/maa/reportStatus
