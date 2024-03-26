@@ -3,8 +3,9 @@ const bodyParser = require('body-parser');
 const fs = require('fs'); // 파일 시스템 접근 모듈
 const path = require('path');
 const axios = require('axios');
-const { Client, GatewayIntentBits, AttachmentBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
+
 require('dotenv').config();
 
 const API_KEY = process.env.OPENAI_API_KEY;
@@ -13,6 +14,8 @@ const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const app = express();
 const maaPort = 3001;
+
+const rosmontisImageUrl = 'https://cdn.discordapp.com/attachments/1078390856542851152/1222096235855482920/rosmontisImage.jpg?ex=6614f8d0&is=660283d0&hm=a5dd0ffc17b8edecf62b5c8315de1d37dbdce0fc5d56890d229b1f221b87a438&'
 
 // JSON 요청 본문을 파싱하기 위한 미들웨어 설정
 app.use(express.json());
@@ -67,36 +70,55 @@ client.once('ready', () => {
     //textToSpeech(text); 임시 주석 처리
 });
 client.on('messageCreate', async message => {
+
+    // 여기서 특별한 명령어를 테스트합니다
     // 봇이나 DM으로부터의 메시지는 무시
     if (!message.guild || message.author.bot) return;
-    //음성 입장 기능
-    if (message.content === '/join') {    
-        if (!message.member.voice.channel) {// 유저가 음성 채널에 없는 경우
-            message.reply('음성 채널에 먼저 들어가주세요!'); return;           
-        }
 
-        // 음성 채널에 접속
+    //음성 입장 기능
+    if (message.content === 'testJoin') {    
+        if (!message.member.voice.channel) { message.reply('음성 채널에 먼저 들어가주세요'); return; }
         const connection = joinVoiceChannel({
             channelId: message.member.voice.channel.id,
             guildId: message.guild.id,
             adapterCreator: message.guild.voiceAdapterCreator
         });
-
         message.reply('음성 채널에 접속했습니다!');
     }
-    if (message.content === '/testImage') {
-      // 이미지 URL 예시
-      const imageUrl = 'rosmontisImage.jpg';
-      // 로컬 파일이면 경로를 지정하세요.
-      const filePath = './rosmontisImage.jpg';
+    // 이미지 새성 기능
+    else if (message.content === 'testImage') {
+      const imageUrl = 'rosmontisImage.jpg'; // 이미지 URL 예시
+      const filePath = './rosmontisImage.jpg'; // 로컬 파일이면 경로를 지정
       //const file = new AttachmentBuilder(filePath).setName('LocalImage.png');
       const file = new AttachmentBuilder('').setName('rosmontisImage.jpg');
-
-      // ~ 이미지 메시지 전송 ~
       const imageAttachment = new AttachmentBuilder(imageUrl, { name: 'rosmontisImage.jpg' });
       await message.channel.send({ content: '로즈마리에요:', files: [imageAttachment] });
   
     }
+    // maa 연동 테스트 & 임베드 기능
+    else if (message.content === 'testEmbed') {
+      const embed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle('title')
+        .setURL('https://discord.js.org/')
+        .setAuthor({ name: 'name', iconURL: rosmontisImageUrl, url: 'https://discord.js.org' })
+        .setDescription('Some description here')
+        .setThumbnail(rosmontisImageUrl)
+        .addFields(
+          { name: 'Regular field title', value: 'ㅂㅈㄷㄱ' },
+          { name: '\u200B', value: '\u200B' },
+          { name: 'Inline field title', value: 'ㅁㄴㅇㄹ', inline: true },
+          { name: 'Inline field title', value: 'ㅋㅌㅊㅍ', inline: true },
+        )
+        // .addField('Inline field title', 'Some value here', true) // 필요에 따라 주석 해제
+        .setImage(rosmontisImageUrl)
+        .setTimestamp()
+        .setFooter({ text: 'setFooter text ', iconURL: rosmontisImageUrl});
+        
+    await message.channel.send({ embeds: [embed] });
+    }
+
+
     else {
       // 기초 대화 기능
       try {
