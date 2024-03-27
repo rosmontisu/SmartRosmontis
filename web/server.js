@@ -5,6 +5,7 @@ const path = require('path');
 const axios = require('axios');
 const { Client, GatewayIntentBits, AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
+const { Console } = require('console');
 
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ const GPT_API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const app = express();
 const maaPort = 3001;
+const userMaaID = "rosmontisu"
 
 const rosmontisImageUrl = 'https://cdn.discordapp.com/attachments/1078390856542851152/1222096235855482920/rosmontisImage.jpg?ex=6614f8d0&is=660283d0&hm=a5dd0ffc17b8edecf62b5c8315de1d37dbdce0fc5d56890d229b1f221b87a438&'
 
@@ -29,7 +31,9 @@ const filePath = path.join(directoryPath, 'prompt3.txt'); // gpt 3.5 prompt
 const fileContent = fs.readFileSync(filePath, 'utf8');
 const AI_PROMPT = fileContent
 
+// maa로부터의 TaskReq와 ReportStatus를 string 형태로 바꾸어 저장합니다
 let getTskReq;
+let getReportStatus;
 
 // tts 함수 구현
 async function textToSpeech(text) {
@@ -67,15 +71,19 @@ const client = new Client({ intents: [
   GatewayIntentBits.MessageContent] });
 client.once('ready', () => {
     console.log('Bot is ready!');
-    // 텍스트 변환을 테스트합니다
+
+    // MAA 원격 링크 실행을 테스트합니다
+    //testMaa();
+
+
     const text = "txt 음성변환 테스트 문자열입니다";
     //textToSpeech(text); 임시 주석 처리
 });
 client.on('messageCreate', async message => {
 
     // 여기서 특별한 명령어를 테스트합니다
-    // 봇이나 DM으로부터의 메시지는 무시
-    if (!message.guild || message.author.bot) return;
+    // dm, 봇, 첨부파일, 
+    if (!message.guild || message.author.bot || message.attachments.size > 0) return;
 
     //음성 입장 기능
     if (message.content === 'testJoin') {    
@@ -121,9 +129,15 @@ client.on('messageCreate', async message => {
     }
 
     // MAA 연동 테스트
-    else if (message.content === 'testMaa') {    
-      
-      message.reply(getTskReq);
+    else if (message.content === 'testMaa') {     
+      //message.reply("현재 getTask" + getTskReq);
+      message.reply("LinkStart를 tesks.push");
+      addTask({
+        id: userMaaID,
+        type: "LinkStart"
+      });
+      //message.reply("LingStart res json"+getReportStatus);
+      message.reply("요청완료")
   }
 
 
@@ -153,12 +167,9 @@ client.on('messageCreate', async message => {
         console.error('Error responding to message: ', error);
       }
     }
-  });
-    
-
+  }); 
 // 환경 변수에서 토큰을 로드하여 봇 로그인
 client.login(DISCORD_TOKEN);
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server and Discord bot are running on http://localhost:${PORT}`);
@@ -166,48 +177,48 @@ app.listen(PORT, () => {
 console.log("현재 모델은 3.5")
 
 
-
-
-// maa_server 연동 파트
 // bodyParser를 사용하여 JSON 요청 본문 파싱 활성화
 app.use(bodyParser.json());
 
 let tasks = []; // 작업을 저장할 배열
-// 새 작업 추가 함수
+// 진행할 작업을 여기에 저장하는겁니다!!!
 function addTask(newTask) {
     tasks.push(newTask);
 }
-
-
-
-// getTask 엔드포인트 구현
+// 실행할 작업을 가져오는 엔드포인트 (1초마다 폴링)
 app.post('/maa/getTask', (req, res) => {
-  console.log('getTask 요청:', req.body);
-  getTskReq = JSON.stringify(req.body); // json 2 string 
-  console.log(getTskReq);
+  console.log('폴링중입니다', req.body); // 1초마다 폴링
+  getTskReq = JSON.stringify(req.body); // 요청을 임시 let에 저장 : 출력 디버깅용
   res.json({ tasks });
 });
-
 // 작업 상태 보고 엔드포인트
 app.post('/maa/reportStatus', (req, res) => {
-  console.log('reportStatus 요청:', req.body);
-  // 여기에서 작업 실행 결과를 처리합니다. 예를 들어 데이터베이스에 저장할 수 있습니다.
+  console.log('작업 실행 결과:', req.body);
+  getReportStatus = JSON.stringify(req.body); // json 2 string 
   res.send('OK');
 });
 app.listen(maaPort, () => {
   console.log(`서버가 ${maaPort}번 포트에서 실행중입니다.`);
+  
 });
-console.log("작동 테스트 1")
-// 임시로 몇 가지 작업을 추가
-addTask({
-  id: "task1",
-  type: "CaptureImage"
-});
-console.log("작동 테스트 2")
-addTask({
-  id: "task2",
+
+// maa와의 원격 조작 테스트
+function testMaa() {
+  console.log("LinkStart 요청")
+  addTask({
+  id: userMaaID,
   type: "LinkStart"
 });
+console.log("요청완료")
+}
+
+
+// 계속 실패함
+// console.log("CaptureImage 요청")
+// addTask({
+//   id: "2번작업 CaptureImage",
+//   type: "CaptureImage"
+// });
 
 
 
