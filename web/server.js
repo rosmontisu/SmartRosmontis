@@ -142,7 +142,7 @@ function addTask(newTask) {
 }
 // 실행할 작업을 가져오는 엔드포인트 (1초마다 폴링)
 app.post('/maa/getTask', (req, res) => {
-  console.log('폴링중입니다', req.body); // 1초마다 폴링
+  console.log('server 폴링중입니다', req.body); // 1초마다 폴링
   getTskReq = JSON.stringify(req.body); // 요청을 임시 let에 저장 : 출력 디버깅용
   res.json({ tasks });
 });

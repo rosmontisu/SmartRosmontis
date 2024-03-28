@@ -1,10 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3001;
+const maaPort = 3005;
 app.use(bodyParser.json());
-
-
 
 let tasks = []; 
 function addTask(newTask) {
@@ -12,7 +10,7 @@ function addTask(newTask) {
 }
 
 app.post('/maa/getTask', (req, res) => {
-    console.log('폴링중입니다', req.body); // 1초마다 폴링
+    console.log('server_maa 폴링중입니다', req.body); // 1초마다 폴링
     getTskReq = JSON.stringify(req.body); // 요청을 임시 let에 저장 : 출력 디버깅용
     res.json({ tasks });
   });
