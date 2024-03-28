@@ -6,7 +6,6 @@ const axios = require('axios');
 const { Client, GatewayIntentBits, AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const { Console } = require('console');
-
 require('dotenv').config();
 
 const API_KEY = process.env.OPENAI_API_KEY;
@@ -16,65 +15,26 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const app = express();
 const maaPort = 3001;
 const userMaaID = "rosmontisu"
-
 const rosmontisImageUrl = 'https://cdn.discordapp.com/attachments/1078390856542851152/1222096235855482920/rosmontisImage.jpg?ex=6614f8d0&is=660283d0&hm=a5dd0ffc17b8edecf62b5c8315de1d37dbdce0fc5d56890d229b1f221b87a438&'
 
 // JSON 요청 본문을 파싱하기 위한 미들웨어 설정
 app.use(express.json());
 app.use(bodyParser.json());
-
-
 //const AI_PROMPT = process.env.AI_PROMPT; // 짧은 프롬프트는 .env로 가져옵니다.
 const directoryPath = __dirname; // 긴 프롬프트는 prompt.txt로 가져옵니다
 const filePath = path.join(directoryPath, 'prompt3.txt'); // gpt 3.5 prompt
-//const filePath = path.join(directoryPath, 'prompt4.txt'); // gpt 4 prompt
 const fileContent = fs.readFileSync(filePath, 'utf8');
 const AI_PROMPT = fileContent
-
-// maa로부터의 TaskReq와 ReportStatus를 string 형태로 바꾸어 저장합니다
-let getTskReq;
-let getReportStatus;
-
-// tts 함수 구현
-async function textToSpeech(text) {
-  try {
-    const response = await axios.post(
-      `${GPT_API_ENDPOINT}`,
-      {
-        model: "tts-1", // 현재 예시에서는 텍스트 모델을 사용하고 있으나, 실제 TTS 모델로 변경해야 합니다.
-        input: text,
-        // 여기에 필요한 TTS 매개변수 추가
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    // API 응답에서 음성 데이터 추출
-    // 주의: 실제 응답 구조는 OpenAI TTS API 문서를 참조해야 합니다.
-    const audioData = response.data; // 응답 구조에 따라 수정 필요
-
-    // 음성 데이터를 MP3 파일로 저장
-    fs.writeFileSync('speech.mp3', audioData, 'binary');
-    console.log('음성 파일이 speech.mp3로 저장되었습니다.');
-  } catch (error) {
-    console.error('텍스트를 음성으로 변환하는 데 실패했습니다:', error);
-  }
-}
+let botReply = "너는 박사의 조수 로즈마리다."
 
 // 실제 봇 클라이언트 생성
 const client = new Client({ intents: [
   GatewayIntentBits.Guilds, 
   GatewayIntentBits.GuildMessages, 
   GatewayIntentBits.MessageContent] });
+
 client.once('ready', () => {
     console.log('Bot is ready!');
-
-    // MAA 원격 링크 실행을 테스트합니다
-    //testMaa();
-
 
     const text = "txt 음성변환 테스트 문자열입니다";
     //textToSpeech(text); 임시 주석 처리
@@ -139,15 +99,15 @@ client.on('messageCreate', async message => {
       //message.reply("LingStart res json"+getReportStatus);
       message.reply("요청완료")
   }
-
-
     else {
       // 기초 대화 기능
       try {
         const response = await axios.post(GPT_API_ENDPOINT, {
           model: 'gpt-3.5-turbo-0125', 
+          //model: 'ft:gpt-3.5-turbo-0125:hepari:20240328:97daB1Fy', 
           messages: [
             {"role": "system", "content": AI_PROMPT},
+            {"role" : "assistant", "content": botReply},  // 이전 대화 내용을 기억합니다.
             {"role": "user", "content": message.content}
           ]
         }, {
@@ -157,7 +117,7 @@ client.on('messageCreate', async message => {
           }
         });
     
-        const botReply = response.data.choices[0].message.content;
+        botReply = response.data.choices[0].message.content;
         await message.reply(botReply);
         console.log(message.content)
         console.log(botReply)
@@ -168,20 +128,15 @@ client.on('messageCreate', async message => {
       }
     }
   }); 
-// 환경 변수에서 토큰을 로드하여 봇 로그인
+
+// 봇 실행
 client.login(DISCORD_TOKEN);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server and Discord bot are running on http://localhost:${PORT}`);
 });
-console.log("현재 모델은 3.5")
 
-
-// bodyParser를 사용하여 JSON 요청 본문 파싱 활성화
-app.use(bodyParser.json());
-
-let tasks = []; // 작업을 저장할 배열
-// 진행할 작업을 여기에 저장하는겁니다!!!
+let tasks = []; 
 function addTask(newTask) {
     tasks.push(newTask);
 }
@@ -199,7 +154,6 @@ app.post('/maa/reportStatus', (req, res) => {
 });
 app.listen(maaPort, () => {
   console.log(`서버가 ${maaPort}번 포트에서 실행중입니다.`);
-  
 });
 
 // maa와의 원격 조작 테스트
@@ -213,21 +167,36 @@ console.log("요청완료")
 }
 
 
-// 계속 실패함
-// console.log("CaptureImage 요청")
-// addTask({
-//   id: "2번작업 CaptureImage",
-//   type: "CaptureImage"
-// });
 
 
 
 
-// 파인튜닝 모델 1 : ft:gpt-3.5-turbo-0125:hepari::95V281ME
-// gpt 4 : model: 'gpt-4-turbo-preview', 
-// gpt 3.5 : model: 'gpt-3.5-turbo-0125', 
 
-// 엔드포인트의 구조는
-// http://mydomain.com:port/maa/getTask
-// http://localhost:3000/maa/getTask
-// http://localhost:3000/maa/reportStatus
+// tts 함수
+async function textToSpeech(text) {
+  try {
+    const response = await axios.post(
+      `${GPT_API_ENDPOINT}`,
+      {
+        model: "tts-1", // 현재 예시에서는 텍스트 모델을 사용하고 있으나, 실제 TTS 모델로 변경해야 합니다.
+        input: text,
+        // 여기에 필요한 TTS 매개변수 추가
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    // API 응답에서 음성 데이터 추출
+    // 주의: 실제 응답 구조는 OpenAI TTS API 문서를 참조해야 합니다.
+    const audioData = response.data; // 응답 구조에 따라 수정 필요
+
+    // 음성 데이터를 MP3 파일로 저장
+    fs.writeFileSync('speech.mp3', audioData, 'binary');
+    console.log('음성 파일이 speech.mp3로 저장되었습니다.');
+  } catch (error) {
+    console.error('텍스트를 음성으로 변환하는 데 실패했습니다:', error);
+  }
+}

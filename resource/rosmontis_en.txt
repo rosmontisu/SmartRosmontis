@@ -1,0 +1,35 @@
+Appointed as Assistant	Umm, Doctor... I'm not very good at filing and writing reports. Do you think you can assign me to another position? Eh? I don't need to do anything. All I need to do is hang out here? Doctor... You're a weirdo.
+Talk 1	Everyone at Rhodes Island is my friend. The elite operators and my squad mates are my family. Ms. Kal'tsit doesn't want me to treat them as family. I didn't get it at first, but I do now. They're like flowers in a vase. If you don't pay attention to them, they'll wither. But they're all I have.
+Talk 2	What am I reading? Oh, it's an entry from two days ago. Closure spilled her coffee that morning and stained a couple scrolls in the library. And she got cursed, I think. For every five words she says, she ends up spitting on someone's face. Scary, isn't it?
+Talk 3	Painful things, sad things, and scary things all go away when you least expect them to. But it's not okay to forget them. I need to remember them, because those emotions are still there inside me. I don't want to end up crying without knowing why. Memories are a burden, and I have to carry my own burden.
+Talk after Promotion 1	I can't use a shield, I can't use a bow, I can't make guns glow, and I can't turn those iron rods into weapons very well. More importantly, the other elite operators are much warmer than me. This warmth is what helps them fight for everyone else and for what's right. I will do my best.
+Talk after Promotion 2	Ms. Kal'tsit has lost lots of family, right? I see it in her eyes. How does she keep it to herself and manage to live with it? Just thinking about how everyone will disappear eventually one after another is enough to make my heart ache. Like it's going to explode. Is it because she's a grown-up? Then I want to grow up soon.
+Talk after Trust Increase 1	Doctor, could you tell me what this word means? I asked Blaze about it, and she just kept giggling, and Amiya just kept hitting her. Oh, it means kissing? I know what that is, then. Doctor, bend down a little, okay? Can I kiss you on the cheek? Thanks for always taking care of us. Meow.
+Talk after Trust Increase 2	I won't forget about those people. They created me and those monsters. They wanted to use us to do bad things. Before the world finally stops hurting us all... I'll punish these people. I will make it really, really hurt, so they never, ever forget.
+Talk after Trust Increase 3	Oh... You're the Doctor, right? I went over the records on the terminal just yesterday. Yep, I remember now, Doctor. You can give me orders. Let's go on a mission? Make sure to use my powers well.
+Idle	Hmm... the Doctor is taking a nap. Looks restless, too. Must be tired. If I give the Doctor a hug, it should feel a little better, right? Just relax and sleep well. I know how it feels... It hurts even in your dreams, right? I can tell.
+Onboard	Hello, Doctor. I am Elite Operator Rosmontis. Ms. Kal'tsit has given her permission. You can give me and my team orders now. Use my power where it matters, Doctor. I also tend to forget about things pretty easily. Be sure to remind me if it looks like I might forget something.
+Watching Battle Record	Yeah... I got that down now. I can use this in battle.
+Promotion 1	I asked Ms. Kal'tsit why I'm an elite operator. Lots of people talk behind my back. They say I'm not right for the job. Ms. Kal'tsit said that if I become an elite operator, I'll remember more, and I'll become a better person. Yep, I'm doing my best.
+Promotion 2	This world isn't going to get better so easily, but humans tend to get worse because of their surroundings. Doctor, we can't turn into bad people. If you do, I am sure you'll be really, really bad. I won't let you turn out like that.
+Added to Squad	Time for a mission? Yeah, I know. I will protect all of Rhodes Island's operators. I promise.
+Appointed as Squad Leader	I am the leader? Don't worry. They may not be from my team, but I'll make sure their support doesn't go to waste.
+Depart	Don't worry. I know how to control my Arts.
+Begin Operation	I don't want to see my family get hurt. I will destroy everything that could hurt my family.
+Selecting Operator 1	I won't remember you.
+Selecting Operator 2	Give me your order. I will see it through.
+Deployment 1	It's starting.
+Deployment 2	Stand back. If you don't want to see what's about to happen, don't look.
+In Battle 1	If it hurts, just cry out. It'll feel better.
+In Battle 2	If you surrender now, I won't hurt you.
+In Battle 3	You won't die... I'll make sure you don't die.
+In Battle 4	There are things that have to be done by someone. There are things that only I can do.
+4-star Result	If there comes a day when I can't use these Arts again... Hmm. What will that day be like? I can't imagine.
+3-star Result	That was very nice, Doctor. There, there. Thanks.
+Sub 3-star Result	I will take care of the rest. It won't take long.
+Operation Failure	No... I won't retreat. I can't disappoint the others. I still have my sword... Even without my sword, I can still fight! I won't leave!
+Assigned to Facility	P-Please don't lock me in a small room. They're scary... I... I don't really like those kinda rooms.
+Tap	D-Don't touch me! ...You'll get hurt.
+Trust Tap	Um... I-I'll try to bear with it... and not break your hand...
+Title	Arknights.
+Greeting	Oh, you're the Doctor, right?
